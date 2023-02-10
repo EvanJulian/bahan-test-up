@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'BlocProvider.dart';
 
 class SecondPage extends StatefulWidget {
   final ColorBloc bloc;
-  const SecondPage({Key? key, required this.bloc}) : super(key: key);
+  final String name;
+  final String nrp;
+  const SecondPage({Key? key, required this.bloc, required this.name, required this.nrp}) : super(key: key);
 
   @override
   State<SecondPage> createState() => _SecondPageState();
@@ -13,6 +16,13 @@ class SecondPage extends StatefulWidget {
 class _SecondPageState extends State<SecondPage> {
   TextEditingController namaController = TextEditingController();
   TextEditingController nrpController = TextEditingController();
+
+ @override
+  void initState() {
+    namaController.text = widget.name;
+    nrpController.text = widget.nrp;
+    super.initState();
+  }
 
   String selectedValue = "Black";
 
@@ -81,8 +91,14 @@ class _SecondPageState extends State<SecondPage> {
           SizedBox(
             height: 20,
           ),
-          InkWell(
-            onTap: (){
+          RawMaterialButton(
+            fillColor: Colors.blueAccent,
+            constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width *0.6, minHeight: 45),
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setString('nama', namaController.text);
+              prefs.setString('nrp', nrpController.text);
+
               var tmp;
               if(selectedValue == 'Black'){
                 tmp = ColorEvent.to_black;
@@ -96,14 +112,7 @@ class _SecondPageState extends State<SecondPage> {
               widget.bloc.add(tmp);
               Navigator.pop(context);
             },
-            child: Center(
-              child: Container(
-                height: 50,
-                width: 200,
-                color: Colors.blue,
-                child: Text('Simpan'),
-              ),
-            ),
+            child: Text('Simpan', style: TextStyle(color: Colors.white),)
           )
         ]),
       ),
